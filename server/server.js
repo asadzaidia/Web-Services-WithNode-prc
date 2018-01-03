@@ -20,6 +20,15 @@ app.post('/todos',(req,res)=>{
     res.status(400).send(e);
   });
 });
+app.get('/todos',(req,res)=>{
+  Todo.find().then((doc)=>{
+    res.send({
+    doc:doc //sending object so that we can send other data with todos array
+    })
+  },(e)=>{
+    res.send(400).send(e);
+  });
+});
 app.listen(3000,()=>{
   console.log('Started on port 3000');
 });
