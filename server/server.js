@@ -6,9 +6,13 @@ var {Todo}=require('./models/todo');
 var {Users}=require('./models/users');
 var {ObjectID}=require('mongodb');
 
+var port=process.env.PORT || 3000;
 var app=express();
 app.use(bodyParser.json());// middleware uses json data attaches with express response
 
+
+//adding todo
+//post/todos
 app.post('/todos',(req,res)=>{
   var todo=new Todo({
     text:req.body.text
@@ -21,6 +25,8 @@ app.post('/todos',(req,res)=>{
     res.status(400).send(e);
   });
 });
+//getting all todos
+///todos
 app.get('/todos',(req,res)=>{
   Todo.find().then((doc)=>{
     res.send({
@@ -30,6 +36,8 @@ app.get('/todos',(req,res)=>{
     res.send(400).send(e);
   });
 });
+
+//todos/id
 
 app.get('/todos/:id',(req,res)=>{
   var id=req.params.id;
@@ -47,8 +55,8 @@ app.get('/todos/:id',(req,res)=>{
 
 
 });
-app.listen(3000,()=>{
-  console.log('Started on port 3000');
+app.listen(port,()=>{
+  console.log(`started at port: ${port}`);
 });
 
 
