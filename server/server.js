@@ -1,10 +1,11 @@
-var express=require('express');
-var bodyParser=require('body-parser');//module to send json parses text into json and sends
-
+const _=require('lodash');
+const express=require('express');
+const bodyParser=require('body-parser');//module to send json parses text into json and sends
+const {ObjectID}=require('mongodb');
 var {mongoose}=require('./db/mongoose');
 var {Todo}=require('./models/todo');
 var {Users}=require('./models/users');
-var {ObjectID}=require('mongodb');
+
 
 var port=process.env.PORT || 3000;
 var app=express();
@@ -60,6 +61,7 @@ app.delete('/todos/:id',(req,res)=>{
   if(!ObjectID.isValid(id)){
     return res.status(404).send();
   }
+
   Todo.findByIdAndRemove(id).then((todo)=>{
     if(!todo){
         return res.status(404).send();
@@ -70,9 +72,35 @@ app.delete('/todos/:id',(req,res)=>{
   });
 
 });
+
+app.patch('/todos/:id',(req,res)=>{
+  var id=req.params.id;
+  var body=_.pick(req.body,['text','completed']);
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+  }
+  if(_.isBoolean(body.completed) && body.completed==true){
+
+    body.completedAt=new Date().getTime();
+  }else{
+
+    body.completed=false;
+    body.completedAt=null;
+  }
+  Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+    if(!todo){
+      return res.status(404).send();
+    }
+    res.send({todo:todo});
+  }).catch((e)=>{
+    res.status(400).send();
+  });
+});
 app.listen(port,()=>{
   console.log(`started at port: ${port}`);
 });
+
+
 
 
 // var newUser=Users({
