@@ -5,7 +5,7 @@ const {ObjectID}=require('mongodb');
 var {mongoose}=require('./db/mongoose');
 var {Todo}=require('./models/todo');
 var {User}=require('./models/users');
-
+var {authenticate}=require('./middleware/authenticate');
 
 var port=process.env.PORT || 3000;
 var app=express();
@@ -112,6 +112,11 @@ app.post('/users',(req,res)=>{
   });
 });
 
+
+//user me
+app.get('/users/me',authenticate,(req,res)=>{//applying middleware
+  res.send(req.user);
+});
 app.listen(port,()=>{
   console.log(`started at port: ${port}`);
 });

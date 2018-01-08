@@ -32,11 +32,12 @@ var UserSchema=new mongoose.Schema({
 
 
 });
-UserSchema.methods.toJSON=function(){
+UserSchema.methods.toJSON=function(){ //returning only id and email to client thats coll +_+
   var user=this;
   var userObject=user.toObject();
   return _.pick(userObject,['_id','email']);
 };
+//tokeninzing and authtecating +_+
 UserSchema.methods.generateAuthToken=function(){ //because anonymus function dont work with this
 var user=this;
 var access='auth';
@@ -45,6 +46,28 @@ user.tokens.push({access,token});
 return user.save().then(()=>{
   return token;
 });
+};
+
+UserSchema.statics.findByToken=function(token){ //.statics turns into Model function
+var User=this;
+var decoded;
+
+  try{
+    decoded=jwt.verify(token,'asadzaidi123');
+  }catch(e){
+      // return new Promise((resolve,reject)=>{
+      //   reject();
+      // });
+
+      //above is same as that below
+      return Promise.reject('test');
+
+  }
+  return User.findOne({
+    '_id':decoded._id,
+    'tokens.token':token, //nested documents means nested array
+    'tokens.access':'auth'
+  });
 };
 var User=mongoose.model('Users',UserSchema);
 
