@@ -55,7 +55,7 @@ UserSchema.methods.removeToken=function(token){
   return user.update({
     $pull:{ //mongodb $pull method to empty array
       tokens:{
-        token:token
+        token: token
       }
     }
   });
