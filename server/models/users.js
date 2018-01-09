@@ -33,7 +33,7 @@ var UserSchema=new mongoose.Schema({
 
 
 });
-UserSchema.methods.toJSON=function(){ //returning only id and email to client thats coll +_+
+UserSchema.methods.toJSON=function(){ //returning only id and email to client thats cool +_+
   var user=this;
   var userObject=user.toObject();
   return _.pick(userObject,['_id','email']);
@@ -47,6 +47,18 @@ user.tokens.push({access,token});
 return user.save().then(()=>{
   return token;
 });
+};
+
+//logout
+UserSchema.methods.removeToken=function(token){
+  var user=this;
+  return user.update({
+    $pull:{ //mongodb $pull method to empty array
+      tokens:{
+        token:token
+      }
+    }
+  });
 };
 
 UserSchema.statics.findByToken=function(token){ //.statics turns into Model function
